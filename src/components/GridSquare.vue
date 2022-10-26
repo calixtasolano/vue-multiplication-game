@@ -3,10 +3,8 @@ export default {
   name: "GridSquare",
   data() {
     return {
-      // lineToDelete: "",
-      //enteredValue: "",
-      //colFactorVisibility: [],
-      //products: this.buildProductArray(),
+      isActive: false,
+      answerArr2: [],
     };
   },
   props: {
@@ -16,27 +14,46 @@ export default {
     id: {
       type: Number,
     },
-    //emits: ["update:enteredValue"],
-    /* factor: {
-      type: Number,
-    }, */
+    emits: ["input"],
   },
   methods: {
-    hideShow: function () {
+    hideShow: function (data) {
       if (Math.random() < 0.5) return true;
+    },
+    checkActive: function (data) {
+      console.log("data:" + data.item);
+      console.log("Value: " + data.value);
+      console.log("Index: " + data.index);
+      console.log(typeof data.value);
+      if (data.value == data.item) {
+        console.log(true);
+        const element = this.$refs.input;
+        console.log(element[data.index]);
+        //element[index].addClass("correct");
+        this.isActive = true;
+        this.answerArr2[data.index] = true;
+        //this.answerArr.push(true);
+      } else {
+        this.isActive = false;
+        this.answerArr2[data.index] = false;
+        //this.answerArr.push(false);
+      }
+      console.log(this.answerArr2);
     },
   },
 };
 </script>
 
 <template>
-  <div class="value-cell" v-for="(value, index) in valuesArray">
-    <p class="given-value" v-if="hideShow()">{{ value }}</p>
+  <div class="value-cell" v-for="(item, index) in valuesArray[0]">
+    <p class="given-value" v-if="valuesArray[1][index]">{{ item }}</p>
     <input
       type="number"
       placeholder="Num"
       v-else
-      @input="$emit('input', { value: $event.target.value, id, value })"
+      ref="input"
+      @input="checkActive({ value: $event.target.value, id, item, index })"
+      :class="[this.answerArr2[index] ? 'correct' : 'incorrect']"
       min="1"
       max="100"
     />
@@ -66,14 +83,16 @@ div.value-cell {
 
 div.value-cell > input {
   height: 3em;
+  border-color: darkgray;
+  border-style: solid;
 }
 
 .correct {
-  background-color: green;
+  background-color: lightgreen;
 }
 
 .incorrect {
-  background-color: red;
+  background-color: lightcoral;
 }
 /* .item {
   margin-top: 2rem;

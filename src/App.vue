@@ -9,7 +9,9 @@ export default {
       factorValue: "",
       columnFactors: [],
       rowFactors: [],
-      //tempObj: {},
+      columnFactorVisibility: [],
+      rowFactorVisibility: [],
+      productsVisibility: [],
       answerArr: [],
       products: [],
     };
@@ -42,6 +44,13 @@ export default {
       this.columnFactors = this.buildFactorArray();
       this.rowFactors = this.buildFactorArray();
       this.products = this.buildProductArray();
+      this.columnFactorVisibility = this.fiftyFiftyHideShow(
+        this.columnFactors.length
+      );
+      this.rowFactorVisibility = this.fiftyFiftyHideShow(
+        this.rowFactors.length
+      );
+      this.productsVisibility = this.productsHideShow(this.products.length);
     },
     buildProductArray: function () {
       let arr = [];
@@ -69,18 +78,74 @@ export default {
       console.log(arr);
       return arr;
     },
+    fiftyFiftyHideShow: function (arrLength) {
+      let arr = [];
+      for (let index = 0; index < arrLength; index++) {
+        if (Math.random() < 0.5) {
+          arr.push(true);
+        } else {
+          arr.push(false);
+        }
+      }
+      console.log(arr);
+      return arr;
+    },
     setAnswers: function (data) {
+      console.log("data:" + data.item);
       console.log("Value: " + data.value);
+      console.log("Index: " + data.index);
       console.log(typeof data.value);
-      console.log("Factor: " + data.factor);
-      if (data.value == data.factor) {
+      if (data.value == data.item) {
         console.log(true);
         this.answerArr.push(true);
       } else {
         this.answerArr.push(false);
       }
-      //console.log("DATA: " + data.value == data.factor);
-      //this.answerArr[data.id] = data.value;
+    },
+    getRandomIntInclusive: function (min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
+    },
+    productsHideShow: function (arrLength) {
+      //Make sure there is 1 in each row...
+      // take products indices and make array of those
+      // splice them into x arrays each of length col.length
+      //pick one random element from each array
+      //push to temp array
+      //loop through all products in array hide/show on 50/50
+      //set hide/show[index from temp array] all to show (true)
+
+      //move to computed??
+      let productLength = this.products.length;
+      console.log("PL " + productLength);
+      let columnLength = this.columnFactors.length;
+      console.log("CL " + columnLength);
+
+      let randomSetToShowInProducts = [];
+
+      randomSetToShowInProducts = this.fiftyFiftyHideShow(arrLength);
+      let randomIndexInEachRowArr = [];
+
+      //be sure one is showing in each row
+      for (
+        let startIndex = 0;
+        startIndex < productLength;
+        startIndex = startIndex + columnLength
+      ) {
+        //get random index from each row using getRandomIntInclusive(min, max);
+        let randomFromRow = this.getRandomIntInclusive(
+          startIndex,
+          startIndex + columnLength - 1
+        );
+        //console.log(randomFromRow);
+        randomIndexInEachRowArr.push(randomFromRow);
+        console.log("random index: " + randomIndexInEachRowArr);
+        randomSetToShowInProducts[randomFromRow] = true;
+      }
+      console.log("products visibility array " + randomSetToShowInProducts);
+
+      return randomSetToShowInProducts;
     },
   },
   mounted() {
@@ -112,25 +177,27 @@ export default {
     <div class="multiplication-grid">
       <div class="column-factors">
         <div>EMPTY</div>
-        <GridSquare v-bind:valuesArray="columnFactors" @input="setAnswers" />
+        <GridSquare
+          v-bind:valuesArray="[columnFactors, columnFactorVisibility]"
+          @input="setAnswers"
+        />
       </div>
       <div class="row-two-down">
         <div class="row-factors">
-          <GridSquare v-bind:valuesArray="rowFactors" />
+          <GridSquare v-bind:valuesArray="[rowFactors, rowFactorVisibility]" />
         </div>
         <div class="products">
-          <GridSquare v-bind:valuesArray="products" />
+          <GridSquare v-bind:valuesArray="[products, productsVisibility]" />
         </div>
       </div>
     </div>
     <p>{{ answerArr }}</p>
+    <button @click="count++">Check values</button>
   </main>
 </template>
 
 <style scoped>
 div.multiplication-grid {
-  /* display: flex;
-  flex-wrap: wrap; */
   border: solid 0.2em magenta;
   max-width: fit-content;
 }
@@ -145,8 +212,6 @@ div.row-two-down {
 }
 
 div.row-factors {
-  /* flex-direction: column;
-  display: flex; */
   display: flex;
   flex-direction: column;
   border: solid 0.2em red;
@@ -160,8 +225,6 @@ div.column-factors > * {
 }
 
 div.products {
-  /* display: flex;
-  flex-direction: row; */
   display: flex;
   flex-wrap: wrap;
   border: solid 0.2em purple;
