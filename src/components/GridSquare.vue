@@ -14,6 +14,7 @@ export default {
     id: {
       type: Number,
     },
+    //showIt: { type: Boolean },
     emits: ["input"],
   },
   methods: {
@@ -53,7 +54,10 @@ export default {
       v-else
       ref="input"
       @input="checkActive({ value: $event.target.value, id, item, index })"
-      :class="[this.answerArr2[index] ? 'correct' : 'incorrect']"
+      :class="[
+        this.answerArr2[index] ? 'correct' : 'incorrect',
+        { showing: valuesArray[2] },
+      ]"
       min="1"
       max="100"
     />
@@ -93,6 +97,10 @@ div.value-cell > input {
 
 .incorrect {
   background-color: lightcoral;
+}
+
+.showing {
+  background-color: white;
 }
 /* .item {
   margin-top: 2rem;

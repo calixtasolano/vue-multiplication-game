@@ -14,6 +14,7 @@ export default {
       productsVisibility: [],
       answerArr: [],
       products: [],
+      showResults: false,
     };
   },
   computed: {},
@@ -147,6 +148,17 @@ export default {
 
       return randomSetToShowInProducts;
     },
+    showResult: function (event) {
+      console.log("button");
+      console.log(this.showResults);
+      this.showResults = !this.showResults;
+
+      /* if (this.$refs.input.classList.contains("correct")) {
+        console.log("yup");
+      } */
+      //this.isActive = !this.isActive;
+      // some code to filter users
+    },
   },
   mounted() {
     this.init();
@@ -178,21 +190,29 @@ export default {
       <div class="column-factors">
         <div>EMPTY</div>
         <GridSquare
-          v-bind:valuesArray="[columnFactors, columnFactorVisibility]"
+          v-bind:valuesArray="[
+            columnFactors,
+            columnFactorVisibility,
+            showResults,
+          ]"
           @input="setAnswers"
         />
       </div>
       <div class="row-two-down">
         <div class="row-factors">
-          <GridSquare v-bind:valuesArray="[rowFactors, rowFactorVisibility]" />
+          <GridSquare
+            v-bind:valuesArray="[rowFactors, rowFactorVisibility, showResults]"
+          />
         </div>
         <div class="products">
-          <GridSquare v-bind:valuesArray="[products, productsVisibility]" />
+          <GridSquare
+            v-bind:valuesArray="[products, productsVisibility, showResults]"
+          />
         </div>
       </div>
     </div>
     <p>{{ answerArr }}</p>
-    <button @click="count++">Check values</button>
+    <button v-on:click="showResult()">Check {{ showResults }}</button>
   </main>
 </template>
 
@@ -229,6 +249,7 @@ div.products {
   flex-wrap: wrap;
   border: solid 0.2em purple;
 }
+
 /* header {
   line-height: 1.5;
 }
