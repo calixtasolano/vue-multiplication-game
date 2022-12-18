@@ -14,10 +14,51 @@ export default {
       productsVisibility: [],
       answerArr: [],
       products: [],
-      showResults: false,
+      whiteBoxes: true,
+      inputCount: 0,
+      trueCount: 0,
+      falseCount: 0,
+      columnsFlag: "C",
+      rowsFlag: "R",
+      productsFlag: "P",
     };
   },
-  computed: {},
+  computed: {
+    gridStyleColumns() {
+      console.log("hello");
+      let colNum = this.columnFactors.length + 1;
+      return {
+        "grid-template-columns": "repeat(" + colNum + ", 1fr)",
+        // order: 1
+      };
+    },
+    gridStyleProducts() {
+      console.log("hello");
+      let colNum = this.columnFactors.length;
+      return {
+        "grid-template-columns": "repeat(" + colNum + ", 1fr)",
+        // order: 1
+      };
+    },
+    totalInputs() {
+      let visArr;
+      visArr = this.columnFactorVisibility.concat(
+        this.rowFactorVisibility,
+        this.productsVisibility
+      );
+      console.log("visArr " + visArr);
+      console.log("visArr length" + visArr.length);
+      this.inputCount = visArr.filter((value) => value === false).length;
+      /* for (let i = 0; i < visArr.length; i++) {
+        if (visArr[i] == false) {
+          this.falseCount = this.falseCount + 1;
+          console.log("false here");
+        } */
+      console.log(this.inputCount);
+      return this.inputCount;
+      //}
+    },
+  },
   methods: {
     randomOneToNine: function () {
       let randomFactor = Math.floor(Math.random() * 9) + 1;
@@ -91,7 +132,7 @@ export default {
       console.log(arr);
       return arr;
     },
-    setAnswers: function (data) {
+    /* setAnswers: function (data) {
       console.log("data:" + data.item);
       console.log("Value: " + data.value);
       console.log("Index: " + data.index);
@@ -102,7 +143,7 @@ export default {
       } else {
         this.answerArr.push(false);
       }
-    },
+    }, */
     getRandomIntInclusive: function (min, max) {
       min = Math.ceil(min);
       max = Math.floor(max);
@@ -150,14 +191,34 @@ export default {
     },
     showResult: function (event) {
       console.log("button");
-      console.log(this.showResults);
-      this.showResults = !this.showResults;
+      console.log(this.whiteBoxes);
+      this.whiteBoxes = !this.whiteBoxes;
+
+      if (this.inputCount == this.trueCount) {
+        alert("done");
+      }
 
       /* if (this.$refs.input.classList.contains("correct")) {
         console.log("yup");
       } */
       //this.isActive = !this.isActive;
       // some code to filter users
+    },
+    eventHandler(value, data) {
+      //if index changes false to true, +1 to true Count
+      //if index changes true to false, -1 true Count
+      // for (let i = 0; i < data.index; i++) {
+      if (data.item == data.value) {
+        console.log("data item" + data.item);
+        console.log("data value" + data.value);
+        this.trueCount = this.trueCount + value;
+        console.log("handle false");
+      } else if (data.value && data.item !== data.value && this.trueCount > 0) {
+        //this.trueCount = this.trueCount - value;
+      }
+      //this.trueCount = this.trueCount + value;
+      this.falseCount = this.inputCount - this.trueCount;
+      console.log("this true count" + this.trueCount);
     },
   },
   mounted() {
@@ -187,32 +248,54 @@ export default {
     <p>{{ "row factors: " + rowFactors }}</p>
 
     <div class="multiplication-grid">
-      <div class="column-factors">
+      <div class="column-factors" :style="gridStyleColumns">
+        <!-- <div class="column-factors"> -->
         <div>EMPTY</div>
+
         <GridSquare
           v-bind:valuesArray="[
             columnFactors,
             columnFactorVisibility,
-            showResults,
+            whiteBoxes,
+            columnsFlag,
           ]"
           @input="setAnswers"
+          @add-true="eventHandler"
         />
       </div>
       <div class="row-two-down">
         <div class="row-factors">
           <GridSquare
-            v-bind:valuesArray="[rowFactors, rowFactorVisibility, showResults]"
+            v-bind:valuesArray="[
+              rowFactors,
+              rowFactorVisibility,
+              whiteBoxes,
+              rowsFlag,
+            ]"
+            @add-true="eventHandler"
           />
         </div>
-        <div class="products">
+        <div class="products" :style="gridStyleProducts">
           <GridSquare
-            v-bind:valuesArray="[products, productsVisibility, showResults]"
+            v-bind:valuesArray="[
+              products,
+              productsVisibility,
+              whiteBoxes,
+              productsFlag,
+            ]"
+            @add-true="eventHandler"
           />
         </div>
       </div>
     </div>
-    <p>{{ answerArr }}</p>
-    <button v-on:click="showResult()">Check {{ showResults }}</button>
+    <!-- <p>{{ answerArr }}</p> -->
+    <button v-on:click="showResult()">CHECK ANSWERS</button>
+    <p>
+      Check {{ whiteBoxes }} total inputs: {{ totalInputs }} true:{{
+        trueCount
+      }}
+      false:{{ falseCount }}
+    </p>
   </main>
 </template>
 
@@ -220,34 +303,35 @@ export default {
 div.multiplication-grid {
   border: solid 0.2em magenta;
   max-width: fit-content;
+  display: grid;
 }
 div.column-factors {
   display: flex;
   flex-grow: 1;
   border: solid 0.4em chartreuse;
+  display: grid;
+  /* grid-template-columns: repeat(9, 1fr); */
 }
-
 div.row-two-down {
   display: flex;
 }
-
 div.row-factors {
   display: flex;
   flex-direction: column;
   border: solid 0.2em red;
 }
-
 div.column-factors > * {
   min-width: 6em;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-
 div.products {
   display: flex;
   flex-wrap: wrap;
   border: solid 0.2em purple;
+  display: grid;
+  /* grid-template-columns: repeat(9, 1fr); */
 }
 
 /* header {

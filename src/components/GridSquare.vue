@@ -3,43 +3,86 @@ export default {
   name: "GridSquare",
   data() {
     return {
-      isActive: false,
-      answerArr2: [],
+      //isActive: false,
+      answerArr2: {},
+      trueCount: 0,
+      id: 0,
+      //falseCount: 0,
     };
   },
   props: {
     valuesArray: {
       type: Object,
     },
-    id: {
+    /* id: {
       type: Number,
-    },
+    }, */
+
+    /* falseCount: {
+      type: Number,
+    }, */
     //showIt: { type: Boolean },
-    emits: ["input"],
+    //emits: ["input"],
   },
+  computed: {},
   methods: {
     hideShow: function (data) {
       if (Math.random() < 0.5) return true;
+    },
+    idIncrement(idx, showing) {
+      console.log("compute id");
+      if (!showing) {
+        this.id = this.id + 1;
+      }
+      //this.id = this.id + 1;
+      //let colNum = this.columnFactors.length + 1;
+      //return this.answerArr2;
     },
     checkActive: function (data) {
       console.log("data:" + data.item);
       console.log("Value: " + data.value);
       console.log("Index: " + data.index);
+      console.log("Id: " + data.id);
+      console.log("Flag: " + data.flag);
+      console.log(typeof data.flag);
       console.log(typeof data.value);
       if (data.value == data.item) {
         console.log(true);
-        const element = this.$refs.input;
-        console.log(element[data.index]);
-        //element[index].addClass("correct");
-        this.isActive = true;
+        //const element = this.$refs.input;
+        //console.log(element[data.index]);
+        //this.isActive = true;
+        //let tempObj;
+        //tempObj = { id: data.item };
+        //this.answerArr2[this.id] = data.item;
+        //let tempObJ;
         this.answerArr2[data.index] = true;
+        //this.answerArr2[data.flag][data.index] = true;
+        //console.log("tsting flag " + this.answerArr2[data.flag]);
+        //this.answerArr2[data.index] = true;
+        this.trueCount++;
+        //if (this.answerArr2[data.index] == true) {
+
+        //}
+        console.log(this.trueCount);
         //this.answerArr.push(true);
       } else {
-        this.isActive = false;
+        //this.isActive = false;
         this.answerArr2[data.index] = false;
+        this.falseCount++;
+        console.log(this.falseCount);
         //this.answerArr.push(false);
       }
+      this.$emit("add-true", 1, data);
       console.log(this.answerArr2);
+    },
+    countTrueFalse: function () {
+      for (i = 0; i < this.answerArr2.length; i++) {
+        if (this.answerArr2[i] == true) {
+          this.trueCount++;
+        }
+        //combine all three visibility arrays (true means p showing and input hidden), loop through them and get all false to get input count
+        //count all true answers and subtract from number of inputs to get false count.
+      }
     },
   },
 };
@@ -53,11 +96,12 @@ export default {
       placeholder="Num"
       v-else
       ref="input"
-      @input="checkActive({ value: $event.target.value, id, item, index })"
+      @blur="checkActive({ value: $event.target.value, id, item, index })"
       :class="[
         this.answerArr2[index] ? 'correct' : 'incorrect',
-        { showing: valuesArray[2] },
+        { notShowing: valuesArray[2] },
       ]"
+      :disabled="!valuesArray[2]"
       min="1"
       max="100"
     />
@@ -99,7 +143,7 @@ div.value-cell > input {
   background-color: lightcoral;
 }
 
-.showing {
+.notShowing {
   background-color: white;
 }
 /* .item {
