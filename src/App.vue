@@ -1,4 +1,5 @@
 <script>
+import { buildDirectiveArgs } from "@vue/compiler-core";
 import GridSquare from "./components/GridSquare.vue";
 
 export default {
@@ -7,6 +8,7 @@ export default {
   data() {
     return {
       factorValue: "",
+      id: 0,
       columnFactors: [],
       rowFactors: [],
       columnFactorVisibility: [],
@@ -80,7 +82,27 @@ export default {
         }
       } while (arr.length < randomDimensionTwoOrGreater);
       console.log(arr);
-      return arr;
+
+      let idValuesArray = [];
+      for (let i = 0; i < arr.length; i++) {
+        //let id[] = this.buildId();
+        let obj = {};
+        obj.factor = arr[i];
+        obj.id = this.buildId();
+        console.log(obj);
+        idValuesArray.push(obj);
+      }
+
+      console.log(idValuesArray);
+      return idValuesArray;
+    },
+    buildId: function () {
+      this.id = this.id + 1;
+      return this.id;
+      /*       let arrIds = [];
+      arrIds.push(this.id);
+      console.log(arrIds);
+      return arrIds; */
     },
     init: function () {
       this.columnFactors = this.buildFactorArray();
@@ -112,13 +134,26 @@ export default {
           //console.log(this.rowFactors[0]);
           //console.log(this.columnFactors[0]);
           //console.log(colLength);
-          let product = this.rowFactors[i] * this.columnFactors[j];
+          let product =
+            this.rowFactors[i].factor * this.columnFactors[j].factor;
           console.log("product: " + testProd);
           arr.push(product);
         }
       }
-      console.log(arr);
-      return arr;
+      let idValuesArray = [];
+      for (let i = 0; i < arr.length; i++) {
+        //let id[] = this.buildId();
+        let obj = {};
+        obj.factor = arr[i];
+        obj.id = this.buildId();
+        console.log(obj);
+        idValuesArray.push(obj);
+      }
+
+      console.log(idValuesArray);
+      return idValuesArray;
+      //console.log(arr);
+      // return arr;
     },
     fiftyFiftyHideShow: function (arrLength) {
       let arr = [];
@@ -204,22 +239,49 @@ export default {
       //this.isActive = !this.isActive;
       // some code to filter users
     },
-    eventHandler(value, data) {
+    eventHandler(data) {
       //if index changes false to true, +1 to true Count
       //if index changes true to false, -1 true Count
       // for (let i = 0; i < data.index; i++) {
-      if (data.item == data.value) {
-        console.log("data item" + data.item);
-        console.log("data value" + data.value);
-        this.trueCount = this.trueCount + value;
-        console.log("handle false");
-      } else if (data.value && data.item !== data.value && this.trueCount > 0) {
-        //this.trueCount = this.trueCount - value;
+
+      //if id exists
+
+      const index = this.answerArr.findIndex((object) => {
+        return object.id == data.item.id;
+      });
+
+      if (index !== -1 && data.item.factor == data.value) {
+        this.answerArr[index].result = true;
+      } else if (index == -1 && data.item.factor == data.value) {
+        let obj = {};
+        //for (let i = 0; i < data.item.id; i++) {
+        obj.id = data.item.id;
+        obj.result = true;
+        console.log(obj);
+        this.answerArr.push(obj);
       }
-      //this.trueCount = this.trueCount + value;
+
+      console.log(this.answerArr);
+      let result = this.answerArr.map((a) => a.result);
+      console.log(result);
+
+      this.trueCount = this.answerArr.length;
+
+      //HERE
+      /*  const count = this.answerArr.reduce((elements, arr) => {
+        if (arr == true) {
+          return this.trueCount + 1;
+        }
+
+        return this.trueCount;
+      }); */
       this.falseCount = this.inputCount - this.trueCount;
-      console.log("this true count" + this.trueCount);
+      //this.trueCount = this.trueCount - value;
     },
+    //this.trueCount = this.trueCount + value;
+    //this.falseCount = this.inputCount - this.trueCount;
+    //console.log("this true count" + this.trueCount);
+    //},
   },
   mounted() {
     this.init();
@@ -244,8 +306,8 @@ export default {
 
   <main>
     <!-- <TheGameGrid /> -->
-    <p>{{ "column factors: " + columnFactors }}</p>
-    <p>{{ "row factors: " + rowFactors }}</p>
+    <p>{{ "column factors: " + columnFactors.map((a) => a.factor) }}</p>
+    <p>{{ "row factors: " + rowFactors.map((a) => a.factor) }}</p>
 
     <div class="multiplication-grid">
       <div class="column-factors" :style="gridStyleColumns">
@@ -360,4 +422,16 @@ div.products {
     flex-wrap: wrap;
   }
 } */
+
+.correct {
+  background-color: lightgreen;
+}
+
+.incorrect {
+  background-color: lightcoral;
+}
+
+.notShowing {
+  background-color: white;
+}
 </style>

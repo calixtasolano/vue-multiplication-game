@@ -39,64 +39,64 @@ export default {
       //return this.answerArr2;
     },
     checkActive: function (data) {
-      console.log("data:" + data.item);
+      console.log("data:" + data.item.factor);
       console.log("Value: " + data.value);
       console.log("Index: " + data.index);
-      console.log("Id: " + data.id);
-      console.log("Flag: " + data.flag);
-      console.log(typeof data.flag);
+      console.log("Id: " + data.item.id);
+      //console.log("Flag: " + data.flag);
+      //console.log(typeof data.flag);
       console.log(typeof data.value);
-      if (data.value == data.item) {
-        console.log(true);
-        //const element = this.$refs.input;
-        //console.log(element[data.index]);
-        //this.isActive = true;
-        //let tempObj;
-        //tempObj = { id: data.item };
-        //this.answerArr2[this.id] = data.item;
-        //let tempObJ;
-        this.answerArr2[data.index] = true;
-        //this.answerArr2[data.flag][data.index] = true;
-        //console.log("tsting flag " + this.answerArr2[data.flag]);
-        //this.answerArr2[data.index] = true;
-        this.trueCount++;
-        //if (this.answerArr2[data.index] == true) {
+      //if (data.value == data.item.factor) {
+      //console.log(true);
+      //const element = this.$refs.input;
+      //console.log(element[data.index]);
+      //this.isActive = true;
+      //let tempObj;
+      //tempObj = { id: data.item };
+      //this.answerArr2[this.id] = data.item;
+      //let tempObJ;
+      //this.answerArr2[data.index] = true;
+      //this.answerArr2[data.flag][data.index] = true;
+      //console.log("tsting flag " + this.answerArr2[data.flag]);
+      //this.answerArr2[data.index] = true;
+      //this.trueCount++;
+      //if (this.answerArr2[data.index] == true) {
 
-        //}
-        console.log(this.trueCount);
-        //this.answerArr.push(true);
-      } else {
-        //this.isActive = false;
-        this.answerArr2[data.index] = false;
-        this.falseCount++;
-        console.log(this.falseCount);
-        //this.answerArr.push(false);
-      }
-      this.$emit("add-true", 1, data);
-      console.log(this.answerArr2);
+      //}
+      //console.log(this.trueCount);
+      //this.answerArr.push(true);
+      // } else {
+      //this.isActive = false;
+      //this.answerArr2[data.index] = false;
+      //this.falseCount++;
+      //console.log(this.falseCount);
+      //this.answerArr.push(false);
+      //}
+      this.$emit("add-true", data);
+      //console.log(this.answerArr2);
     },
-    countTrueFalse: function () {
+    /* countTrueFalse: function () {
       for (i = 0; i < this.answerArr2.length; i++) {
         if (this.answerArr2[i] == true) {
           this.trueCount++;
         }
         //combine all three visibility arrays (true means p showing and input hidden), loop through them and get all false to get input count
         //count all true answers and subtract from number of inputs to get false count.
-      }
-    },
+      } */
   },
+  //},
 };
 </script>
 
 <template>
   <div class="value-cell" v-for="(item, index) in valuesArray[0]">
-    <p class="given-value" v-if="valuesArray[1][index]">{{ item }}</p>
+    <p class="given-value" v-if="valuesArray[1][index]">{{ item.factor }}</p>
     <input
       type="number"
       placeholder="Num"
       v-else
       ref="input"
-      @blur="checkActive({ value: $event.target.value, id, item, index })"
+      @blur="checkActive({ value: $event.target.value, item, index })"
       :class="[
         this.answerArr2[index] ? 'correct' : 'incorrect',
         { notShowing: valuesArray[2] },
