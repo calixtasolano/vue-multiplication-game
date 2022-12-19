@@ -55,6 +55,12 @@ export default {
       //tempObj = { id: data.item };
       //this.answerArr2[this.id] = data.item;
       //let tempObJ;
+      this.$emit("add-true", data);
+      if (data.value == data.item.factor) {
+        this.answerArr2[data.index] = true;
+      } else {
+        this.answerArr2[data.index] = false;
+      }
       //this.answerArr2[data.index] = true;
       //this.answerArr2[data.flag][data.index] = true;
       //console.log("tsting flag " + this.answerArr2[data.flag]);
@@ -72,7 +78,7 @@ export default {
       //console.log(this.falseCount);
       //this.answerArr.push(false);
       //}
-      this.$emit("add-true", data);
+
       //console.log(this.answerArr2);
     },
     /* countTrueFalse: function () {

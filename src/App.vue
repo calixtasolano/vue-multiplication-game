@@ -259,13 +259,15 @@ export default {
         obj.result = true;
         console.log(obj);
         this.answerArr.push(obj);
+      } else {
+        this.answerArr[index].result = false;
       }
 
       console.log(this.answerArr);
-      let result = this.answerArr.map((a) => a.result);
+      let result = this.answerArr.map((a) => a.result).filter((a) => a == true);
       console.log(result);
 
-      this.trueCount = this.answerArr.length;
+      this.trueCount = result.length;
 
       //HERE
       /*  const count = this.answerArr.reduce((elements, arr) => {
@@ -358,6 +360,7 @@ export default {
       }}
       false:{{ falseCount }}
     </p>
+    <!-- <p>answerArr: {{ answerArr }}</p> -->
   </main>
 </template>
 
