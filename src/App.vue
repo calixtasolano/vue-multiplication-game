@@ -2,6 +2,24 @@
 import { buildDirectiveArgs } from "@vue/compiler-core";
 import GridSquare from "./components/GridSquare.vue";
 
+let max;
+
+function myFunction(x) {
+  if (x.matches) {
+    // If media query matches
+    max = 2;
+    //document.body.style.backgroundColor = "yellow";
+  } else {
+    //document.body.style.backgroundColor = "pink";
+    max = 8;
+  }
+  return max;
+}
+
+var x = window.matchMedia("(max-width: 700px)");
+myFunction(x); // Call listener function at run time
+x.addListener(myFunction);
+
 export default {
   name: "App",
   components: { GridSquare },
@@ -23,6 +41,7 @@ export default {
       columnsFlag: "C",
       rowsFlag: "R",
       productsFlag: "P",
+      btnActive: false,
     };
   },
   computed: {
@@ -66,10 +85,11 @@ export default {
       let randomFactor = Math.floor(Math.random() * 9) + 1;
       return (this.factorValue = randomFactor);
     },
-    buildFactorArray: function () {
+    buildFactorArray: function (val) {
+      console.log(val);
       let arr = [];
       console.log("arr " + arr);
-      let randomDimensionTwoOrGreater = Math.floor(Math.random() * 7) + 2;
+      let randomDimensionTwoOrGreater = Math.floor(Math.random() * val) + 2;
       console.log("rl " + randomDimensionTwoOrGreater);
 
       do {
@@ -105,8 +125,8 @@ export default {
       return arrIds; */
     },
     init: function () {
-      this.columnFactors = this.buildFactorArray();
-      this.rowFactors = this.buildFactorArray();
+      this.columnFactors = this.buildFactorArray(max);
+      this.rowFactors = this.buildFactorArray(max);
       this.products = this.buildProductArray();
       this.columnFactorVisibility = this.fiftyFiftyHideShow(
         this.columnFactors.length
@@ -115,6 +135,8 @@ export default {
         this.rowFactors.length
       );
       this.productsVisibility = this.productsHideShow(this.products.length);
+      this.inputCount = this.totalInputs();
+      this.answerArr = [];
     },
     buildProductArray: function () {
       let arr = [];
@@ -229,7 +251,7 @@ export default {
       console.log(this.whiteBoxes);
       this.whiteBoxes = !this.whiteBoxes;
 
-      if (this.inputCount == this.trueCount) {
+      if (this.inputCount === this.trueCount) {
         alert("done");
       }
 
@@ -280,6 +302,13 @@ export default {
       this.falseCount = this.inputCount - this.trueCount;
       //this.trueCount = this.trueCount - value;
     },
+    toggle() {
+      if (!this.btnActive) {
+        this.btnActive = true;
+      } else {
+        this.btnActive = false;
+      }
+    },
     //this.trueCount = this.trueCount + value;
     //this.falseCount = this.inputCount - this.trueCount;
     //console.log("this true count" + this.trueCount);
@@ -308,14 +337,25 @@ export default {
 
   <main>
     <!-- <TheGameGrid /> -->
-    <p>{{ "column factors: " + columnFactors.map((a) => a.factor) }}</p>
-    <p>{{ "row factors: " + rowFactors.map((a) => a.factor) }}</p>
-
+    <!--     <p>{{ "column factors: " + columnFactors.map((a) => a.factor) }}</p>
+    <p>{{ "row factors: " + rowFactors.map((a) => a.factor) }}</p> -->
+    <!-- <div>
+      Correct!
+      <button
+        @click="
+          init();
+          toggle();
+        "
+      >
+        Play again
+      </button>
+    </div> -->
+    <h1>Complete the Multiplication Grid</h1>
+    <h2>Fill in the missing spots</h2>
     <div class="multiplication-grid">
       <div class="column-factors" :style="gridStyleColumns">
         <!-- <div class="column-factors"> -->
         <div>EMPTY</div>
-
         <GridSquare
           v-bind:valuesArray="[
             columnFactors,
@@ -353,27 +393,41 @@ export default {
       </div>
     </div>
     <!-- <p>{{ answerArr }}</p> -->
-    <button v-on:click="showResult()">CHECK ANSWERS</button>
-    <p>
+    <button
+      v-on:click="showResult()"
+      class="check-btn"
+      :class="[btnActive ? 'check-btn' : 'other']"
+      @click="toggle"
+    >
+      {{ btnActive ? "KEEP GOING" : "CHECK ANSWERS" }}
+    </button>
+    <!-- <p>
       Check {{ whiteBoxes }} total inputs: {{ totalInputs }} true:{{
         trueCount
       }}
       false:{{ falseCount }}
-    </p>
+    </p> -->
     <!-- <p>answerArr: {{ answerArr }}</p> -->
   </main>
 </template>
 
 <style scoped>
+h1 {
+  text-align: center;
+}
+h2 {
+  margin-bottom: 1em;
+  text-align: center;
+}
 div.multiplication-grid {
-  border: solid 0.2em magenta;
+  /* border: solid 0.2em magenta; */
   max-width: fit-content;
   display: grid;
 }
 div.column-factors {
   display: flex;
   flex-grow: 1;
-  border: solid 0.4em chartreuse;
+  /* border: solid 0.4em chartreuse; */
   display: grid;
   /* grid-template-columns: repeat(9, 1fr); */
 }
@@ -383,20 +437,45 @@ div.row-two-down {
 div.row-factors {
   display: flex;
   flex-direction: column;
-  border: solid 0.2em red;
+  border-top: solid 0.2em transparent;
+  /* border: solid 0.2em red; */
 }
 div.column-factors > * {
-  min-width: 6em;
+  width: 6em;
+  height: 6em;
+  /* border: solid 0.1em black; */
   display: flex;
   justify-content: center;
   align-items: center;
+  /* border-right: solid 0.2em transparent; */
+  border-bottom: none;
 }
 div.products {
   display: flex;
   flex-wrap: wrap;
-  border: solid 0.2em purple;
+  /* border: solid 0.2em purple; */
   display: grid;
-  /* grid-template-columns: repeat(9, 1fr); */
+  border-top: solid 0.2em black;
+  border-left: solid 0.2em black;
+}
+
+button.check-btn {
+  margin-top: 2em;
+  margin-left: auto;
+  height: 4em;
+  width: 12em;
+  background: green;
+  border: solid 0.1em red;
+  color: white;
+  border-radius: 0.2em;
+  border-color: green;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+button.other {
+  background-color: hsl(219deg 73% 46% / 98%);
+  border-color: hsl(219deg 73% 46% / 98%);
 }
 
 /* header {

@@ -99,7 +99,7 @@ export default {
     <p class="given-value" v-if="valuesArray[1][index]">{{ item.factor }}</p>
     <input
       type="number"
-      placeholder="Num"
+      placeholder="Number"
       v-else
       ref="input"
       @blur="checkActive({ value: $event.target.value, item, index })"
@@ -129,16 +129,19 @@ export default {
 div.value-cell {
   width: 6em;
   height: 6em;
-  border: solid 0.2em black;
+  border: solid 0.1em black;
   display: flex;
   justify-content: center;
   align-items: center;
+  border-right: none;
+  border-bottom: none;
 }
 
 div.value-cell > input {
-  height: 3em;
+  height: 4em;
   border-color: darkgray;
   border-style: solid;
+  text-align: center;
 }
 
 .correct {
