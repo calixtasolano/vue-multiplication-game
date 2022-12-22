@@ -38,9 +38,6 @@ export default {
       inputCount: 0,
       trueCount: 0,
       falseCount: 0,
-      columnsFlag: "C",
-      rowsFlag: "R",
-      productsFlag: "P",
       btnActive: false,
     };
   },
@@ -69,14 +66,9 @@ export default {
       );
       console.log("visArr " + visArr);
       console.log("visArr length" + visArr.length);
-      this.inputCount = visArr.filter((value) => value === false).length;
-      /* for (let i = 0; i < visArr.length; i++) {
-        if (visArr[i] == false) {
-          this.falseCount = this.falseCount + 1;
-          console.log("false here");
-        } */
-      console.log(this.inputCount);
-      return this.inputCount;
+      let inputTotal = visArr.filter((value) => value === false).length;
+      console.log(inputTotal);
+      return inputTotal;
       //}
     },
   },
@@ -105,7 +97,6 @@ export default {
 
       let idValuesArray = [];
       for (let i = 0; i < arr.length; i++) {
-        //let id[] = this.buildId();
         let obj = {};
         obj.factor = arr[i];
         obj.id = this.buildId();
@@ -119,10 +110,6 @@ export default {
     buildId: function () {
       this.id = this.id + 1;
       return this.id;
-      /*       let arrIds = [];
-      arrIds.push(this.id);
-      console.log(arrIds);
-      return arrIds; */
     },
     init: function () {
       this.columnFactors = this.buildFactorArray(max);
@@ -135,7 +122,7 @@ export default {
         this.rowFactors.length
       );
       this.productsVisibility = this.productsHideShow(this.products.length);
-      this.inputCount = this.totalInputs();
+      this.inputCount = this.totalInputs;
       this.answerArr = [];
     },
     buildProductArray: function () {
@@ -153,9 +140,6 @@ export default {
 
       for (let i = 0; i <= this.rowFactors.length - 1; i++) {
         for (let j = 0; j <= this.columnFactors.length - 1; j++) {
-          //console.log(this.rowFactors[0]);
-          //console.log(this.columnFactors[0]);
-          //console.log(colLength);
           let product =
             this.rowFactors[i].factor * this.columnFactors[j].factor;
           console.log("product: " + testProd);
@@ -164,7 +148,6 @@ export default {
       }
       let idValuesArray = [];
       for (let i = 0; i < arr.length; i++) {
-        //let id[] = this.buildId();
         let obj = {};
         obj.factor = arr[i];
         obj.id = this.buildId();
@@ -174,8 +157,6 @@ export default {
 
       console.log(idValuesArray);
       return idValuesArray;
-      //console.log(arr);
-      // return arr;
     },
     fiftyFiftyHideShow: function (arrLength) {
       let arr = [];
@@ -189,18 +170,6 @@ export default {
       console.log(arr);
       return arr;
     },
-    /* setAnswers: function (data) {
-      console.log("data:" + data.item);
-      console.log("Value: " + data.value);
-      console.log("Index: " + data.index);
-      console.log(typeof data.value);
-      if (data.value == data.item) {
-        console.log(true);
-        this.answerArr.push(true);
-      } else {
-        this.answerArr.push(false);
-      }
-    }, */
     getRandomIntInclusive: function (min, max) {
       min = Math.ceil(min);
       max = Math.floor(max);
@@ -254,17 +223,10 @@ export default {
       if (this.inputCount === this.trueCount) {
         alert("done");
       }
-
-      /* if (this.$refs.input.classList.contains("correct")) {
-        console.log("yup");
-      } */
-      //this.isActive = !this.isActive;
-      // some code to filter users
     },
     eventHandler(data) {
       //if index changes false to true, +1 to true Count
       //if index changes true to false, -1 true Count
-      // for (let i = 0; i < data.index; i++) {
 
       //if id exists
 
@@ -276,7 +238,6 @@ export default {
         this.answerArr[index].result = true;
       } else if (index == -1 && data.item.factor == data.value) {
         let obj = {};
-        //for (let i = 0; i < data.item.id; i++) {
         obj.id = data.item.id;
         obj.result = true;
         console.log(obj);
@@ -291,16 +252,7 @@ export default {
 
       this.trueCount = result.length;
 
-      //HERE
-      /*  const count = this.answerArr.reduce((elements, arr) => {
-        if (arr == true) {
-          return this.trueCount + 1;
-        }
-
-        return this.trueCount;
-      }); */
       this.falseCount = this.inputCount - this.trueCount;
-      //this.trueCount = this.trueCount - value;
     },
     toggle() {
       if (!this.btnActive) {
@@ -309,10 +261,6 @@ export default {
         this.btnActive = false;
       }
     },
-    //this.trueCount = this.trueCount + value;
-    //this.falseCount = this.inputCount - this.trueCount;
-    //console.log("this true count" + this.trueCount);
-    //},
   },
   mounted() {
     this.init();
@@ -321,22 +269,7 @@ export default {
 </script>
 
 <template>
-  <!--   <header>
-    <img
-      alt="Vue logo"
-      class="logo"
-      src="./assets/logo.svg"
-      width="125"
-      height="125"
-    />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header> -->
-
   <main>
-    <!-- <TheGameGrid /> -->
     <!--     <p>{{ "column factors: " + columnFactors.map((a) => a.factor) }}</p>
     <p>{{ "row factors: " + rowFactors.map((a) => a.factor) }}</p> -->
     <!-- <div>
@@ -361,32 +294,20 @@ export default {
             columnFactors,
             columnFactorVisibility,
             whiteBoxes,
-            columnsFlag,
           ]"
-          @input="setAnswers"
           @add-true="eventHandler"
         />
       </div>
       <div class="row-two-down">
         <div class="row-factors">
           <GridSquare
-            v-bind:valuesArray="[
-              rowFactors,
-              rowFactorVisibility,
-              whiteBoxes,
-              rowsFlag,
-            ]"
+            v-bind:valuesArray="[rowFactors, rowFactorVisibility, whiteBoxes]"
             @add-true="eventHandler"
           />
         </div>
         <div class="products" :style="gridStyleProducts">
           <GridSquare
-            v-bind:valuesArray="[
-              products,
-              productsVisibility,
-              whiteBoxes,
-              productsFlag,
-            ]"
+            v-bind:valuesArray="[products, productsVisibility, whiteBoxes]"
             @add-true="eventHandler"
           />
         </div>
@@ -478,24 +399,13 @@ button.other {
   border-color: hsl(219deg 73% 46% / 98%);
 }
 
-/* header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
+/* 
 
 @media (min-width: 1024px) {
   header {
     display: flex;
     place-items: center;
     padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
   }
 
   header .wrapper {

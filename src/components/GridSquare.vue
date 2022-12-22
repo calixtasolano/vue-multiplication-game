@@ -3,26 +3,16 @@ export default {
   name: "GridSquare",
   data() {
     return {
-      //isActive: false,
       answerArr2: {},
       trueCount: 0,
       id: 0,
-      //falseCount: 0,
     };
   },
   props: {
     valuesArray: {
       type: Object,
     },
-    /* id: {
-      type: Number,
-    }, */
-
-    /* falseCount: {
-      type: Number,
-    }, */
-    //showIt: { type: Boolean },
-    //emits: ["input"],
+    emits: ["addTrue"],
   },
   computed: {},
   methods: {
@@ -34,63 +24,22 @@ export default {
       if (!showing) {
         this.id = this.id + 1;
       }
-      //this.id = this.id + 1;
-      //let colNum = this.columnFactors.length + 1;
-      //return this.answerArr2;
     },
     checkActive: function (data) {
       console.log("data:" + data.item.factor);
       console.log("Value: " + data.value);
       console.log("Index: " + data.index);
       console.log("Id: " + data.item.id);
-      //console.log("Flag: " + data.flag);
-      //console.log(typeof data.flag);
+
       console.log(typeof data.value);
-      //if (data.value == data.item.factor) {
-      //console.log(true);
-      //const element = this.$refs.input;
-      //console.log(element[data.index]);
-      //this.isActive = true;
-      //let tempObj;
-      //tempObj = { id: data.item };
-      //this.answerArr2[this.id] = data.item;
-      //let tempObJ;
-      this.$emit("add-true", data);
+      this.$emit("addTrue", data);
       if (data.value == data.item.factor) {
         this.answerArr2[data.index] = true;
       } else {
         this.answerArr2[data.index] = false;
       }
-      //this.answerArr2[data.index] = true;
-      //this.answerArr2[data.flag][data.index] = true;
-      //console.log("tsting flag " + this.answerArr2[data.flag]);
-      //this.answerArr2[data.index] = true;
-      //this.trueCount++;
-      //if (this.answerArr2[data.index] == true) {
-
-      //}
-      //console.log(this.trueCount);
-      //this.answerArr.push(true);
-      // } else {
-      //this.isActive = false;
-      //this.answerArr2[data.index] = false;
-      //this.falseCount++;
-      //console.log(this.falseCount);
-      //this.answerArr.push(false);
-      //}
-
-      //console.log(this.answerArr2);
     },
-    /* countTrueFalse: function () {
-      for (i = 0; i < this.answerArr2.length; i++) {
-        if (this.answerArr2[i] == true) {
-          this.trueCount++;
-        }
-        //combine all three visibility arrays (true means p showing and input hidden), loop through them and get all false to get input count
-        //count all true answers and subtract from number of inputs to get false count.
-      } */
   },
-  //},
 };
 </script>
 
@@ -112,17 +61,6 @@ export default {
       max="100"
     />
   </div>
-  <!-- <div class="item">
-    <i>
-      <slot name="icon"></slot>
-    </i>
-    <div class="details">
-      <h3>
-        <slot name="heading"></slot>
-      </h3>
-      <slot></slot>
-    </div>
-  </div> -->
 </template>
 
 <style scoped>
@@ -155,16 +93,7 @@ div.value-cell > input {
 .notShowing {
   background-color: white;
 }
-/* .item {
-  margin-top: 2rem;
-  display: flex;
-}
-
-.details {
-  flex: 1;
-  margin-left: 1rem;
-}
-
+/* 
 i {
   display: flex;
   place-items: center;
@@ -217,12 +146,5 @@ h3 {
     height: calc(50% - 25px);
   }
 
-  .item:first-of-type:before {
-    display: none;
-  }
-
-  .item:last-of-type:after {
-    display: none;
-  }
 } */
 </style>
