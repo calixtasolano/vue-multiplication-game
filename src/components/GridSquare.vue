@@ -80,6 +80,11 @@ div.value-cell > input {
   border-color: darkgray;
   border-style: solid;
   text-align: center;
+  color: #2c3e50;
+}
+
+div.value-cell > input::placeholder {
+  color: #2c3e50;
 }
 
 .correct {

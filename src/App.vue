@@ -4,7 +4,7 @@ import GridSquare from "./components/GridSquare.vue";
 
 let max;
 
-function myFunction(x) {
+/* function myFunction(x) {
   if (x.matches) {
     // If media query matches
     max = 2;
@@ -18,7 +18,30 @@ function myFunction(x) {
 
 var x = window.matchMedia("(max-width: 700px)");
 myFunction(x); // Call listener function at run time
-x.addListener(myFunction);
+x.addListener(myFunction); */
+
+const mediaQuery = window.matchMedia("(min-width: 768px)");
+
+function handleTabletChange(e) {
+  // Check if the media query is true
+  if (e.matches) {
+    // Then log the following message to the console
+    console.log("Media Query Matched!");
+    max = 8;
+  } else {
+    max = 2;
+  }
+}
+
+// Register event listener
+//mediaQuery.addListener(handleTabletChange);
+
+// Initial check
+handleTabletChange(mediaQuery);
+
+mediaQuery.addEventListener("change", () => {
+  this.handleTabletChange();
+});
 
 export default {
   name: "App",
@@ -284,7 +307,7 @@ export default {
       </button>
     </div> -->
     <h1>Complete the Multiplication Grid</h1>
-    <h2>Fill in the missing spots</h2>
+    <h2>(Fill in the missing spots)</h2>
     <div class="multiplication-grid">
       <div class="column-factors" :style="gridStyleColumns">
         <!-- <div class="column-factors"> -->
@@ -351,6 +374,8 @@ div.column-factors {
   /* border: solid 0.4em chartreuse; */
   display: grid;
   /* grid-template-columns: repeat(9, 1fr); */
+  background-color: #80b8f08a;
+  border-left: solid 0.2em transparent;
 }
 div.row-two-down {
   display: flex;
@@ -359,6 +384,7 @@ div.row-factors {
   display: flex;
   flex-direction: column;
   border-top: solid 0.2em transparent;
+  background-color: #80b8f08a;
   /* border: solid 0.2em red; */
 }
 div.column-factors > * {
@@ -378,6 +404,7 @@ div.products {
   display: grid;
   border-top: solid 0.2em black;
   border-left: solid 0.2em black;
+  background-color: #80b8f0;
 }
 
 button.check-btn {
