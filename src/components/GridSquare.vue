@@ -3,40 +3,28 @@ export default {
   name: "GridSquare",
   data() {
     return {
-      answerArr2: {},
-      trueCount: 0,
-      id: 0,
+      flagTF: [],
     };
   },
   props: {
     valuesArray: {
       type: Object,
     },
-    emits: ["addTrue"],
   },
+  emits: ["addTrue"],
   computed: {},
   methods: {
-    hideShow: function (data) {
-      if (Math.random() < 0.5) return true;
-    },
-    idIncrement(idx, showing) {
-      console.log("compute id");
-      if (!showing) {
-        this.id = this.id + 1;
-      }
-    },
     checkActive: function (data) {
-      console.log("data:" + data.item.factor);
-      console.log("Value: " + data.value);
-      console.log("Index: " + data.index);
-      console.log("Id: " + data.item.id);
-
-      console.log(typeof data.value);
+      //console.log("data:" + data.item.factor);
+      //console.log("Value: " + data.value);
+      //console.log("Index: " + data.index);
+      //console.log("Id: " + data.item.id);
+      //console.log(typeof data.value);
       this.$emit("addTrue", data);
       if (data.value == data.item.factor) {
-        this.answerArr2[data.index] = true;
+        this.flagTF[data.index] = true;
       } else {
-        this.answerArr2[data.index] = false;
+        this.flagTF[data.index] = false;
       }
     },
   },
@@ -44,7 +32,11 @@ export default {
 </script>
 
 <template>
-  <div class="value-cell" v-for="(item, index) in valuesArray[0]">
+  <div
+    class="value-cell"
+    v-for="(item, index) in valuesArray[0]"
+    :key="item.id"
+  >
     <p class="given-value" v-if="valuesArray[1][index]">{{ item.factor }}</p>
     <input
       type="number"
@@ -53,7 +45,7 @@ export default {
       ref="input"
       @blur="checkActive({ value: $event.target.value, item, index })"
       :class="[
-        this.answerArr2[index] ? 'correct' : 'incorrect',
+        this.flagTF[index] ? 'correct' : 'incorrect',
         { notShowing: valuesArray[2] },
       ]"
       :disabled="!valuesArray[2]"
@@ -96,7 +88,7 @@ div.value-cell > input::placeholder {
 }
 
 .notShowing {
-  background-color: white;
+  background-color: #f0f080;
 }
 /* 
 i {

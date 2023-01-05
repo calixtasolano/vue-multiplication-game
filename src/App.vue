@@ -2,24 +2,8 @@
 import { buildDirectiveArgs } from "@vue/compiler-core";
 import GridSquare from "./components/GridSquare.vue";
 
+//Handle mobile view, which requires a smaller game grid
 let max;
-
-/* function myFunction(x) {
-  if (x.matches) {
-    // If media query matches
-    max = 2;
-    //document.body.style.backgroundColor = "yellow";
-  } else {
-    //document.body.style.backgroundColor = "pink";
-    max = 8;
-  }
-  return max;
-}
-
-var x = window.matchMedia("(max-width: 700px)");
-myFunction(x); // Call listener function at run time
-x.addListener(myFunction); */
-
 const mediaQuery = window.matchMedia("(min-width: 768px)");
 
 function handleTabletChange(e) {
@@ -32,9 +16,6 @@ function handleTabletChange(e) {
     max = 2;
   }
 }
-
-// Register event listener
-//mediaQuery.addListener(handleTabletChange);
 
 // Initial check
 handleTabletChange(mediaQuery);
@@ -65,6 +46,7 @@ export default {
     };
   },
   computed: {
+    //dymnamic grid layout for column headers
     gridStyleColumns() {
       console.log("hello");
       let colNum = this.columnFactors.length + 1;
@@ -73,6 +55,7 @@ export default {
         // order: 1
       };
     },
+    //dymnamic grid layout for products
     gridStyleProducts() {
       console.log("hello");
       let colNum = this.columnFactors.length;
@@ -82,6 +65,7 @@ export default {
       };
     },
     totalInputs() {
+      //Concat all visibility arrays and get a count of all false (means input is showing)
       let visArr;
       visArr = this.columnFactorVisibility.concat(
         this.rowFactorVisibility,
@@ -91,26 +75,29 @@ export default {
       console.log("visArr length" + visArr.length);
       let inputTotal = visArr.filter((value) => value === false).length;
       console.log(inputTotal);
+      //Get total of inputs on grid
       return inputTotal;
-      //}
     },
   },
   methods: {
+    //Calculate a random integer between 1 and 9
     randomOneToNine: function () {
       let randomFactor = Math.floor(Math.random() * 9) + 1;
       return (this.factorValue = randomFactor);
     },
     buildFactorArray: function (val) {
+      //Build column and row factors
       console.log(val);
       let arr = [];
       console.log("arr " + arr);
+      //Get length for array (random integer between 2 and 9) -- define dimensions of grid
       let randomDimensionTwoOrGreater = Math.floor(Math.random() * val) + 2;
       console.log("rl " + randomDimensionTwoOrGreater);
-
       do {
+        //Generate random int for new factor
         let newFactor = this.randomOneToNine();
         console.log("nf: " + newFactor);
-
+        //Ensure that the factor isn't duplicated
         if (arr.indexOf(newFactor) === -1) {
           arr.push(newFactor);
           console.log("already here?");
@@ -118,6 +105,7 @@ export default {
       } while (arr.length < randomDimensionTwoOrGreater);
       console.log(arr);
 
+      //Generate id for each factor
       let idValuesArray = [];
       for (let i = 0; i < arr.length; i++) {
         let obj = {};
@@ -126,14 +114,16 @@ export default {
         console.log(obj);
         idValuesArray.push(obj);
       }
-
       console.log(idValuesArray);
+      //Array of factors with associated ids
       return idValuesArray;
     },
+    //Increment to generate id for each box (factor)
     buildId: function () {
       this.id = this.id + 1;
       return this.id;
     },
+    //Initialize game grid
     init: function () {
       this.columnFactors = this.buildFactorArray(max);
       this.rowFactors = this.buildFactorArray(max);
@@ -150,17 +140,18 @@ export default {
     },
     buildProductArray: function () {
       let arr = [];
-      console.log("cf: " + this.columnFactors);
+      //console.log("cf: " + this.columnFactors);
       console.log("cf length: " + this.columnFactors.length);
 
-      console.log("rf: " + this.rowFactors);
+      //console.log("rf: " + this.rowFactors);
       console.log("rf length: " + this.rowFactors.length);
 
       let colLength = this.columnFactors.length;
 
-      let testProd = this.rowFactors[0] * this.columnFactors[0];
+      let testProd = this.rowFactors[0].factor * this.columnFactors[0].factor;
       console.log("testProd: " + testProd);
 
+      //For each row, calculate the product down the row (across the column headers)
       for (let i = 0; i <= this.rowFactors.length - 1; i++) {
         for (let j = 0; j <= this.columnFactors.length - 1; j++) {
           let product =
@@ -169,6 +160,8 @@ export default {
           arr.push(product);
         }
       }
+
+      //Generate id for each factor
       let idValuesArray = [];
       for (let i = 0; i < arr.length; i++) {
         let obj = {};
@@ -179,8 +172,10 @@ export default {
       }
 
       console.log(idValuesArray);
+      //Array of products with associated ids
       return idValuesArray;
     },
+    //Random hide/show function
     fiftyFiftyHideShow: function (arrLength) {
       let arr = [];
       for (let index = 0; index < arrLength; index++) {
@@ -193,13 +188,16 @@ export default {
       console.log(arr);
       return arr;
     },
+    //TO DO: Use this for all random f'ns? Replace randomOneToNine and randomDimensionTwoOrGreater
     getRandomIntInclusive: function (min, max) {
       min = Math.ceil(min);
       max = Math.floor(max);
       return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
     },
+    //TO DO: Add a check so that no column has all inputs
     productsHideShow: function (arrLength) {
-      //Make sure there is 1 in each row...
+      //Make sure there is at least 1 number in each row...
+
       // take products indices and make array of those
       // splice them into x arrays each of length col.length
       //pick one random element from each array
@@ -207,7 +205,7 @@ export default {
       //loop through all products in array hide/show on 50/50
       //set hide/show[index from temp array] all to show (true)
 
-      //move to computed??
+      //TO DO: move to computed??
       let productLength = this.products.length;
       console.log("PL " + productLength);
       let columnLength = this.columnFactors.length;
@@ -215,66 +213,74 @@ export default {
 
       let randomSetToShowInProducts = [];
 
+      //Run the random hide/show for the length of the products array
       randomSetToShowInProducts = this.fiftyFiftyHideShow(arrLength);
-      let randomIndexInEachRowArr = [];
+      // NOT NEEDED? let randomIndexInEachRowArr = [];
 
-      //be sure one is showing in each row
+      //Need to be sure one number is showing in each row
+      //For each row...
       for (
         let startIndex = 0;
         startIndex < productLength;
         startIndex = startIndex + columnLength
       ) {
-        //get random index from each row using getRandomIntInclusive(min, max);
+        //Get random index using getRandomIntInclusive(min, max);
         let randomFromRow = this.getRandomIntInclusive(
           startIndex,
           startIndex + columnLength - 1
         );
         //console.log(randomFromRow);
-        randomIndexInEachRowArr.push(randomFromRow);
-        console.log("random index: " + randomIndexInEachRowArr);
+        //Push random index into array to
+        //NOT NEEDED? randomIndexInEachRowArr.push(randomFromRow);
+        // NOT NEEDED? console.log("random index: " + randomIndexInEachRowArr);
+
+        //Change the random indices chosen to appear in each row to now read true in visibility
         randomSetToShowInProducts[randomFromRow] = true;
       }
       console.log("products visibility array " + randomSetToShowInProducts);
-
+      //Return ammended visibility array for products -- ensures at least 1 number showing per row
       return randomSetToShowInProducts;
     },
+    //Check button toggles the white box color (TO DO: rename that property) and checks if done with game
     showResult: function (event) {
       console.log("button");
       console.log(this.whiteBoxes);
       this.whiteBoxes = !this.whiteBoxes;
 
       if (this.inputCount === this.trueCount) {
-        alert("done");
+        alert("done"); //TO DO: Set done flag to handle game end
       }
     },
     eventHandler(data) {
-      //if index changes false to true, +1 to true Count
-      //if index changes true to false, -1 true Count
+      //Collect inputs and process true/false
 
-      //if id exists
-
+      //First, check if the id already exists in the answer array. If not, add the id.
       const index = this.answerArr.findIndex((object) => {
         return object.id == data.item.id;
       });
-
+      //If it's already in answer array, and input is true, assign true to the corresponding index
       if (index !== -1 && data.item.factor == data.value) {
         this.answerArr[index].result = true;
       } else if (index == -1 && data.item.factor == data.value) {
+        //If not already in answer array, set obj
         let obj = {};
         obj.id = data.item.id;
         obj.result = true;
         console.log(obj);
         this.answerArr.push(obj);
       } else {
+        //No input means it's false
         this.answerArr[index].result = false;
       }
 
       console.log(this.answerArr);
+
+      //Start getting counts for number of T or F
       let result = this.answerArr.map((a) => a.result).filter((a) => a == true);
       console.log(result);
 
+      //Get number true from length of array of true's. Calculate flase count from that and input
       this.trueCount = result.length;
-
       this.falseCount = this.inputCount - this.trueCount;
     },
     toggle() {
@@ -355,7 +361,7 @@ export default {
   </main>
 </template>
 
-<style scoped>
+<style>
 h1 {
   text-align: center;
 }
