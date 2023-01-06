@@ -43,6 +43,9 @@ export default {
       trueCount: 0,
       falseCount: 0,
       btnActive: false,
+      gameOver: false,
+      correctFlip: "",
+      correctFade: "",
     };
   },
   computed: {
@@ -137,6 +140,10 @@ export default {
       this.productsVisibility = this.productsHideShow(this.products.length);
       this.inputCount = this.totalInputs;
       this.answerArr = [];
+      this.gameOver = false;
+      this.whiteBoxes = true;
+      this.correctFlip = "";
+      this.correctFade = "";
     },
     buildProductArray: function () {
       let arr = [];
@@ -248,7 +255,10 @@ export default {
       this.whiteBoxes = !this.whiteBoxes;
 
       if (this.inputCount === this.trueCount) {
-        alert("done"); //TO DO: Set done flag to handle game end
+        //alert("gameOver"); //TO DO: Set gameOver flag to handle game end
+        this.gameOver = !this.gameOver;
+        this.correctFlip = "flip";
+        this.correctFade = "fade";
       }
     },
     eventHandler(data) {
@@ -312,8 +322,14 @@ export default {
         Play again
       </button>
     </div> -->
-    <h1>Complete the Multiplication Grid</h1>
-    <h2>(Fill in the missing spots)</h2>
+
+    <transition :name="correctFlip" mode="out-in">
+      <h1 v-if="!gameOver">Complete the Multiplication Grid</h1>
+      <p v-else class="game-end">Great Job!</p>
+    </transition>
+    <!-- <transition name="flip-back" mode="out-in">
+      
+    </transition> -->
     <div class="multiplication-grid">
       <div class="column-factors" :style="gridStyleColumns">
         <!-- <div class="column-factors"> -->
@@ -343,14 +359,27 @@ export default {
       </div>
     </div>
     <!-- <p>{{ answerArr }}</p> -->
-    <button
-      v-on:click="showResult()"
-      class="check-btn"
-      :class="[btnActive ? 'check-btn' : 'other']"
-      @click="toggle"
-    >
-      {{ btnActive ? "KEEP GOING" : "CHECK ANSWERS" }}
-    </button>
+    <transition :name="correctFade" mode="out-in">
+      <button
+        v-if="!gameOver"
+        v-on:click="showResult()"
+        class="check-btn"
+        :class="[btnActive ? 'check-btn' : 'other']"
+        @click="toggle"
+      >
+        {{ btnActive ? "KEEP GOING" : "CHECK ANSWERS" }}
+      </button>
+      <button
+        v-else
+        class="play-again"
+        @click="
+          init();
+          toggle();
+        "
+      >
+        <strong> PLAY AGAIN! </strong>
+      </button>
+    </transition>
     <!-- <p>
       Check {{ whiteBoxes }} total inputs: {{ totalInputs }} true:{{
         trueCount
@@ -362,6 +391,9 @@ export default {
 </template>
 
 <style>
+body {
+  background: #f5eeee;
+}
 h1 {
   text-align: center;
 }
@@ -373,6 +405,7 @@ div.multiplication-grid {
   /* border: solid 0.2em magenta; */
   max-width: fit-content;
   display: grid;
+  margin: 0 auto;
 }
 div.column-factors {
   display: flex;
@@ -431,8 +464,22 @@ button.other {
   background-color: hsl(219deg 73% 46% / 98%);
   border-color: hsl(219deg 73% 46% / 98%);
 }
+button.play-again {
+  margin-top: 2em;
+  margin-left: auto;
+  height: 4em;
+  width: 12em;
+  background: #f85555;
+  border: solid 0.1em #f85555;
+  color: white;
+  border-radius: 0.2em;
 
-/* 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/*
 
 @media (min-width: 1024px) {
   header {
@@ -458,5 +505,81 @@ button.other {
 
 .notShowing {
   background-color: white;
+}
+
+.flip-enter-active {
+  -webkit-animation-name: spin;
+  -webkit-animation-timing-function: ease-in-out;
+  -webkit-animation-duration: 2s;
+  animation-name: spin;
+
+  animation-timing-function: ease-in-out;
+
+  animation-duration: 2s;
+  -webkit-transform-style: preserve-3d;
+  -moz-transform-style: preserve-3d;
+  -ms-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+.game-end {
+  color: #f85555;
+  text-align: center;
+  font-size: 2em;
+  /* transform: translateZ(2); */
+  /*   -webkit-transform: rotateY(90deg);
+  -moz-transform: rotateY(90deg);
+  -ms-transform: rotateY(90deg);
+  transform: rotateY(90deg);
+  -webkit-backface-visibility: hidden; */
+}
+
+.flip-leave-active {
+  animation: spin 2s reverse;
+}
+@keyframes spin {
+  0% {
+    transform: rotateY(90deg);
+  }
+
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
+/* .flip-back-enter-active {
+  -webkit-animation-name: spin-back;
+  -webkit-animation-timing-function: ease-in-out;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-duration: 4s;
+  animation-name: spin-back;
+
+  animation-timing-function: ease-in-out;
+
+  animation-duration: 4s;
+  -webkit-transform-style: preserve-3d;
+  -moz-transform-style: preserve-3d;
+  -ms-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+.flip-back-leave-active {
+  animation: spin-back 4s ease-in-out;
+} 
+
+@keyframes spin-back {
+  0% {
+    transform: rotateY(90deg);
+  }
+
+  100% {
+    transform: rotateY(0deg);
+  }
+}*/
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 4s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>
