@@ -3,7 +3,7 @@ import { buildDirectiveArgs } from "@vue/compiler-core";
 import GridSquare from "./components/GridSquare.vue";
 
 //Handle mobile view, which requires a smaller game grid
-let max;
+let colDim, rowDim;
 const mediaQuery = window.matchMedia("(min-width: 768px)");
 
 function handleTabletChange(e) {
@@ -11,9 +11,11 @@ function handleTabletChange(e) {
   if (e.matches) {
     // Then log the following message to the console
     console.log("Media Query Matched!");
-    max = 8;
+    colDim = 8;
+    rowDim = 8;
   } else {
-    max = 2;
+    colDim = 3;
+    rowDim = 5;
   }
 }
 
@@ -38,7 +40,7 @@ export default {
       productsVisibility: [],
       answerArr: [],
       products: [],
-      whiteBoxes: true,
+      emptyBoxes: true,
       inputCount: 0,
       trueCount: 0,
       falseCount: 0,
@@ -84,21 +86,21 @@ export default {
   },
   methods: {
     //Calculate a random integer between 1 and 9
-    randomOneToNine: function () {
+    /*     randomOneToNine: function () {
       let randomFactor = Math.floor(Math.random() * 9) + 1;
       return (this.factorValue = randomFactor);
-    },
+    }, */
     buildFactorArray: function (val) {
       //Build column and row factors
       console.log(val);
       let arr = [];
       console.log("arr " + arr);
       //Get length for array (random integer between 2 and 9) -- define dimensions of grid
-      let randomDimensionTwoOrGreater = Math.floor(Math.random() * val) + 2;
+      let randomDimensionTwoOrGreater = this.getRandomIntInclusive(2, val);
       console.log("rl " + randomDimensionTwoOrGreater);
       do {
         //Generate random int for new factor
-        let newFactor = this.randomOneToNine();
+        let newFactor = this.getRandomIntInclusive(1, 9);
         console.log("nf: " + newFactor);
         //Ensure that the factor isn't duplicated
         if (arr.indexOf(newFactor) === -1) {
@@ -128,8 +130,8 @@ export default {
     },
     //Initialize game grid
     init: function () {
-      this.columnFactors = this.buildFactorArray(max);
-      this.rowFactors = this.buildFactorArray(max);
+      this.columnFactors = this.buildFactorArray(colDim);
+      this.rowFactors = this.buildFactorArray(rowDim);
       this.products = this.buildProductArray();
       this.columnFactorVisibility = this.fiftyFiftyHideShow(
         this.columnFactors.length
@@ -141,7 +143,7 @@ export default {
       this.inputCount = this.totalInputs;
       this.answerArr = [];
       this.gameOver = false;
-      this.whiteBoxes = true;
+      this.emptyBoxes = true;
       this.correctFlip = "";
       this.correctFade = "";
     },
@@ -195,7 +197,7 @@ export default {
       console.log(arr);
       return arr;
     },
-    //TO DO: Use this for all random f'ns? Replace randomOneToNine and randomDimensionTwoOrGreater
+    //TO DO: Use this for all random f'ns? Replace randomOneToNine and randomDimensionTwoOrGreater DONE -- but test before deleting to do
     getRandomIntInclusive: function (min, max) {
       min = Math.ceil(min);
       max = Math.floor(max);
@@ -203,20 +205,18 @@ export default {
     },
     //TO DO: Add a check so that no column has all inputs
     productsHideShow: function (arrLength) {
-      //Make sure there is at least 1 number in each row...
-
-      // take products indices and make array of those
-      // splice them into x arrays each of length col.length
-      //pick one random element from each array
-      //push to temp array
       //loop through all products in array hide/show on 50/50
-      //set hide/show[index from temp array] all to show (true)
+      //Make sure there is at least 1 number showing in each row...
+      // take each row one at a time and pick one random index
+      //set that index to show
 
       //TO DO: move to computed??
       let productLength = this.products.length;
       console.log("PL " + productLength);
       let columnLength = this.columnFactors.length;
       console.log("CL " + columnLength);
+      let rowLength = this.rowFactors.length;
+      console.log("CL " + rowLength);
 
       let randomSetToShowInProducts = [];
 
@@ -226,16 +226,26 @@ export default {
 
       //Need to be sure one number is showing in each row
       //For each row...
+      let randomFromRow;
       for (
         let startIndex = 0;
         startIndex < productLength;
         startIndex = startIndex + columnLength
       ) {
-        //Get random index using getRandomIntInclusive(min, max);
-        let randomFromRow = this.getRandomIntInclusive(
+        let rowSet = randomSetToShowInProducts.slice(
           startIndex,
-          startIndex + columnLength - 1
+          startIndex + columnLength
         );
+        console.log(rowSet);
+        if (!rowSet.includes(true)) {
+          console.log("had to set it");
+          //Get random index using getRandomIntInclusive(min, max);
+          randomFromRow = this.getRandomIntInclusive(
+            startIndex,
+            startIndex + columnLength - 1
+          );
+        }
+
         //console.log(randomFromRow);
         //Push random index into array to
         //NOT NEEDED? randomIndexInEachRowArr.push(randomFromRow);
@@ -244,18 +254,48 @@ export default {
         //Change the random indices chosen to appear in each row to now read true in visibility
         randomSetToShowInProducts[randomFromRow] = true;
       }
+
+      //Get indices of true in one array
+      let indexesOfTrue = [];
+      let arrayOfMods;
+      for (let i = 0; i < randomSetToShowInProducts.length; i++) {
+        if (randomSetToShowInProducts[i] === true) {
+          indexesOfTrue.push(i);
+        }
+        console.log(indexesOfTrue);
+        arrayOfMods = indexesOfTrue.map((x) => x % columnLength);
+        console.log(arrayOfMods);
+      }
+
+      for (let i = 0; i < columnLength; i++) {
+        if (!arrayOfMods.includes(i)) {
+          console.log("had to make one");
+          let randomFromColumn =
+            columnLength * this.getRandomIntInclusive(0, rowLength - 1) + i;
+          randomSetToShowInProducts[randomFromColumn] = true;
+        }
+      }
+
+      //HERE force one random from each column to be true -- TO DO: check if randomFromRow array covers all of these and if not, generate one
+      /*       for (let i = 0; i < columnLength; i++) {
+        let randomFromColumn =
+          columnLength * this.getRandomIntInclusive(0, rowLength - 1) + i;
+        console.log("RandCol" + randomFromColumn);
+        randomSetToShowInProducts[randomFromColumn] = true;
+      } */
+
       console.log("products visibility array " + randomSetToShowInProducts);
       //Return ammended visibility array for products -- ensures at least 1 number showing per row
       return randomSetToShowInProducts;
     },
-    //Check button toggles the white box color (TO DO: rename that property) and checks if done with game
+    //Check button toggles the empty box color and checks if done with game
     showResult: function (event) {
       console.log("button");
-      console.log(this.whiteBoxes);
-      this.whiteBoxes = !this.whiteBoxes;
+      console.log(this.emptyBoxes);
+      this.emptyBoxes = !this.emptyBoxes;
 
       if (this.inputCount === this.trueCount) {
-        //alert("gameOver"); //TO DO: Set gameOver flag to handle game end
+        //alert("gameOver");
         this.gameOver = !this.gameOver;
         this.correctFlip = "flip";
         this.correctFade = "fade";
@@ -338,7 +378,7 @@ export default {
           v-bind:valuesArray="[
             columnFactors,
             columnFactorVisibility,
-            whiteBoxes,
+            emptyBoxes,
           ]"
           @add-true="eventHandler"
         />
@@ -346,13 +386,13 @@ export default {
       <div class="row-two-down">
         <div class="row-factors">
           <GridSquare
-            v-bind:valuesArray="[rowFactors, rowFactorVisibility, whiteBoxes]"
+            v-bind:valuesArray="[rowFactors, rowFactorVisibility, emptyBoxes]"
             @add-true="eventHandler"
           />
         </div>
         <div class="products" :style="gridStyleProducts">
           <GridSquare
-            v-bind:valuesArray="[products, productsVisibility, whiteBoxes]"
+            v-bind:valuesArray="[products, productsVisibility, emptyBoxes]"
             @add-true="eventHandler"
           />
         </div>
@@ -381,7 +421,7 @@ export default {
       </button>
     </transition>
     <!-- <p>
-      Check {{ whiteBoxes }} total inputs: {{ totalInputs }} true:{{
+      Check {{ emptyBoxes }} total inputs: {{ totalInputs }} true:{{
         trueCount
       }}
       false:{{ falseCount }}
