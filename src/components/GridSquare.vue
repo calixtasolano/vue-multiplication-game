@@ -7,19 +7,18 @@ export default {
     };
   },
   props: {
-    valuesArray: {
+    showing: {
       type: Object,
     },
+    item: {
+      type: Object,
+    },
+    index: Number,
   },
   emits: ["addTrue"],
   computed: {},
   methods: {
     checkActive: function (data) {
-      //console.log("data:" + data.item.factor);
-      //console.log("Value: " + data.value);
-      //console.log("Index: " + data.index);
-      //console.log("Id: " + data.item.id);
-      //console.log(typeof data.value);
       this.$emit("addTrue", data);
       if (data.value == data.item.factor) {
         this.flagTF[data.index] = true;
@@ -32,23 +31,18 @@ export default {
 </script>
 
 <template>
-  <div
-    class="value-cell"
-    v-for="(item, index) in valuesArray[0]"
-    :key="item.id"
-  >
-    <p class="given-value" v-if="valuesArray[1][index]">{{ item.factor }}</p>
+  <div>
+    <p class="given-value" v-if="showing[0][index]">{{ item.factor }}</p>
     <input
       type="number"
       placeholder="Number"
       v-else
-      ref="input"
       @blur="checkActive({ value: $event.target.value, item, index })"
       :class="[
         this.flagTF[index] ? 'correct' : 'incorrect',
-        { notShowing: valuesArray[2] },
+        { notShowing: showing[1] },
       ]"
-      :disabled="!valuesArray[2]"
+      :disabled="!showing[1]"
       min="1"
       max="100"
     />
@@ -56,7 +50,7 @@ export default {
 </template>
 
 <style scoped>
-div.value-cell {
+.value-cell {
   width: 6em;
   height: 6em;
   border: solid 0.1em black;
@@ -67,7 +61,7 @@ div.value-cell {
   border-bottom: none;
 }
 
-div.value-cell > input {
+.value-cell > input {
   height: 4em;
   border-color: darkgray;
   border-style: solid;
@@ -75,7 +69,7 @@ div.value-cell > input {
   color: #2c3e50;
 }
 
-div.value-cell > input::placeholder {
+.value-cell > input::placeholder {
   color: #2c3e50;
 }
 
