@@ -358,7 +358,9 @@ export default {
         :class="[btnActive ? 'check-btn' : 'other']"
         @click="toggle"
       >
-        {{ btnActive ? "KEEP GOING" : "CHECK ANSWERS" }}
+        <strong>
+          {{ btnActive ? "KEEP GOING" : "CHECK ANSWERS" }}
+        </strong>
       </button>
       <button
         v-else
@@ -445,16 +447,18 @@ button {
   justify-content: center;
   align-items: center;
 }
+button > strong {
+  font-weight: 700;
+}
 button.check-btn {
-  background: green;
-  border: solid 0.1em red;
+  background: #34a034;
+  border: solid 0.1em #34a034;
   color: white;
   border-radius: 0.2em;
-  border-color: green;
 }
 button.other {
-  background-color: hsl(219deg 73% 46% / 98%);
-  border-color: hsl(219deg 73% 46% / 98%);
+  background-color: #2563d4fa;
+  border-color: #2563d4fa;
 }
 button.play-again {
   background: #f85555;
