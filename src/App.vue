@@ -47,6 +47,7 @@ export default {
       gameOver: false,
       correctFlip: "",
       correctFade: "",
+      inputMaxTest: 0,
     };
   },
   computed: {
@@ -183,6 +184,7 @@ export default {
           arr.push(true);
         } else {
           arr.push(false);
+          this.inputMaxTest += 1;
         }
       }
       console.log(arr);
@@ -233,6 +235,7 @@ export default {
             startIndex,
             startIndex + columnLength - 1
           );
+          this.inputMaxTest -= 1;
         }
 
         //Change the random indices chosen to appear in each row to now read true in visibility
@@ -260,11 +263,37 @@ export default {
           let randomFromColumn =
             columnLength * this.getRandomIntInclusive(0, rowLength - 1) + i;
           randomSetToShowInProducts[randomFromColumn] = true;
+          this.inputMaxTest -= 1;
         }
       }
+      //Check that there are not more inputs than product array length. If there are, ammend colFactors/rowFactors
+      let ammendmentsToMake = this.inputMaxTest - arrLength;
+      console.log(arrLength);
+      console.log(this.inputMaxTest);
+      console.log(ammendmentsToMake);
+      if (ammendmentsToMake > 0) {
+        console.log("ammend this");
+        this.ammendVisibility(ammendmentsToMake);
+      }
+
       console.log("products visibility array " + randomSetToShowInProducts);
       //Return ammended visibility array for products -- ensures at least 1 number showing per row and column
       return randomSetToShowInProducts;
+    },
+    ammendVisibility: function (numChanges) {
+      for (let i = 0; i < numChanges; i++) {
+        console.log(this.columnFactorVisibility);
+        let indexC = this.columnFactorVisibility.indexOf(false);
+        this.columnFactorVisibility[indexC] = true;
+        console.log(this.columnFactorVisibility);
+        i++;
+        if (i < numChanges) {
+          let indexR = this.rowFactorVisibility.indexOf(false);
+          console.log(this.rowFactorVisibility);
+          this.rowFactorVisibility[indexR] = true;
+          console.log(this.rowFactorVisibility);
+        }
+      }
     },
     //Check button toggles the empty box color and checks if done with game
     showResult: function (event) {
@@ -296,7 +325,7 @@ export default {
         obj.result = true;
         console.log(obj);
         this.answerArr.push(obj);
-      } else {
+      } else if (!data) {
         //Empty input means it's false
         this.answerArr[index].result = false;
       }
@@ -330,9 +359,11 @@ export default {
     <!--     <p>{{ "column factors: " + columnFactors.map((a) => a.factor) }}</p>
     <p>{{ "row factors: " + rowFactors.map((a) => a.factor) }}</p> -->
 
+    <h1 v-if="!gameOver">Complete the Multiplication Grid</h1>
     <transition :name="correctFlip" mode="out-in">
-      <h1 v-if="!gameOver">Complete the Multiplication Grid</h1>
-      <p v-else class="game-end">Great Job!</p>
+      <div>
+        <p v-if="gameOver" class="game-end">Great Job!</p>
+      </div>
     </transition>
 
     <div class="multiplication-grid">
