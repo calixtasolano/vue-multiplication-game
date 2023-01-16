@@ -51,8 +51,8 @@ export default {
 
 <style scoped>
 .value-cell {
-  width: 6em;
-  height: 6em;
+  width: 5em;
+  height: 5em;
   border: solid 0.1em black;
   display: flex;
   justify-content: center;
@@ -61,16 +61,36 @@ export default {
   border-bottom: none;
 }
 
+p.given-value {
+  font-size: 1.5em;
+}
+
 .value-cell > input {
   height: 4em;
+  width: 4em;
   border-color: darkgray;
   border-style: solid;
   text-align: center;
   color: #2c3e50;
+  font-size: 1.1em;
 }
 
 .value-cell > input::placeholder {
   color: #2c3e50;
+  font-size: 0.9em;
+}
+
+/*Remove arrows from inputs*/
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 
 .correct {

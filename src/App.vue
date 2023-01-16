@@ -386,11 +386,12 @@ body {
 }
 h1 {
   text-align: center;
+  margin-bottom: 0.5em;
 }
 @media (max-width: 550px) {
   h1,
   p.game-end {
-    min-height: 3.5em;
+    font-size: 1.8em;
   }
 }
 div.multiplication-grid {
@@ -419,8 +420,8 @@ div.row-factors {
   /* border: solid 0.2em red; */
 }
 div.column-factors > * {
-  width: 6em;
-  height: 6em;
+  width: 5em;
+  height: 5em;
   /* border: solid 0.1em black; */
   display: flex;
   justify-content: center;
