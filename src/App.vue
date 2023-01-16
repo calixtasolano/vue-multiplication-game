@@ -384,7 +384,8 @@ export default {
 body {
   background: #f5eeee;
 }
-h1 {
+h1,
+p.game-end {
   text-align: center;
   margin-bottom: 0.5em;
 }
