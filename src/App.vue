@@ -393,6 +393,7 @@ p.game-end {
   h1,
   p.game-end {
     font-size: 1.8em;
+    min-height: 3.2em;
   }
 }
 div.multiplication-grid {
