@@ -45,7 +45,7 @@ export default {
       gameOver: false,
       correctFlip: "",
       correctFade: "",
-      inputMaxTest: 1,
+      inputMaxTest: 0,
     };
   },
   computed: {
@@ -114,6 +114,7 @@ export default {
     },
     //Initialize game grid
     init: function () {
+      this.inputMaxTest = 1;
       this.columnFactors = this.buildFactorArray(colDim);
       this.rowFactors = this.buildFactorArray(rowDim);
       this.products = this.buildProductArray();
