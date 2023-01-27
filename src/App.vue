@@ -45,7 +45,7 @@ export default {
       gameOver: false,
       correctFlip: "",
       correctFade: "",
-      inputMaxTest: 0,
+      inputMaxTest: 1,
     };
   },
   computed: {
@@ -169,7 +169,6 @@ export default {
       // take each row one at a time and pick one random index
       //set that index to show
 
-      //TO DO: do I need these??
       let productLength = this.products.length;
       let columnLength = this.columnFactors.length;
       let rowLength = this.rowFactors.length;
@@ -479,13 +478,10 @@ button.play-again {
 .flip-enter-active {
   animation-name: spin;
   -webkit-animation-name: spin;
-
   animation-timing-function: ease-in-out;
   -webkit-animation-timing-function: ease-in-out;
-
   animation-duration: 2s;
   -webkit-animation-duration: 2s;
-
   -webkit-transform-style: preserve-3d;
   -moz-transform-style: preserve-3d;
   -ms-transform-style: preserve-3d;
