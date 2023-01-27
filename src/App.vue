@@ -45,7 +45,7 @@ export default {
       gameOver: false,
       correctFlip: "",
       correctFade: "",
-      inputMaxTest: 0,
+      inputMaxTest: 1,
     };
   },
   computed: {
