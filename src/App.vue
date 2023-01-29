@@ -305,11 +305,17 @@ export default {
     <!--     <p>{{ "column factors: " + columnFactors.map((a) => a.factor) }}</p>
     <p>{{ "row factors: " + rowFactors.map((a) => a.factor) }}</p> -->
 
-    <h1 v-if="!gameOver">Complete the Multiplication Grid</h1>
     <transition :name="correctFlip" mode="out-in">
-      <p v-if="gameOver" class="game-end">Great Job!</p>
+      <h1 v-if="!gameOver">Complete the Multiplication Grid</h1>
+      <p v-else class="game-end">Great Job!</p>
     </transition>
 
+    <div class="directions">
+      <p>
+        Light blue squares can contain only 1-9. <br />Dark blue squares are
+        their products.
+      </p>
+    </div>
     <div class="multiplication-grid">
       <div class="column-factors" :style="gridStyleColumns">
         <!-- <div class="column-factors"> -->
@@ -389,6 +395,18 @@ p.game-end {
   text-align: center;
   margin-bottom: 0.5em;
 }
+
+div.directions {
+  display: flex;
+  justify-content: center;
+}
+
+div.directions > p {
+  max-width: 31.5em;
+  text-align: left;
+  margin: 0em 0em 1em 0em;
+}
+
 @media (max-width: 550px) {
   h1,
   p.game-end {
@@ -408,7 +426,7 @@ div.column-factors {
   /* border: solid 0.4em chartreuse; */
   display: grid;
   /* grid-template-columns: repeat(9, 1fr); */
-  background-color: #80b8f08a;
+  background-color: #80b8f06e;
   border-left: solid 0.2em transparent;
 }
 div.row-two-down {
@@ -418,7 +436,7 @@ div.row-factors {
   display: flex;
   flex-direction: column;
   border-top: solid 0.2em transparent;
-  background-color: #80b8f08a;
+  background-color: #80b8f06e;
   /* border: solid 0.2em red; */
 }
 div.column-factors > * {
@@ -481,8 +499,8 @@ button.play-again {
   -webkit-animation-name: spin;
   animation-timing-function: ease-in-out;
   -webkit-animation-timing-function: ease-in-out;
-  animation-duration: 2s;
-  -webkit-animation-duration: 2s;
+  animation-duration: 1s;
+  -webkit-animation-duration: 1s;
   -webkit-transform-style: preserve-3d;
   -moz-transform-style: preserve-3d;
   -ms-transform-style: preserve-3d;
@@ -490,7 +508,7 @@ button.play-again {
 }
 
 .flip-leave-active {
-  animation: spin 2s reverse;
+  animation: spin 1s reverse;
 }
 @keyframes spin {
   0% {
