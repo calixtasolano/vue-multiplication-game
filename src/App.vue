@@ -54,7 +54,6 @@ export default {
       let colNum = this.columnFactors.length + 1;
       return {
         "grid-template-columns": "repeat(" + colNum + ", 1fr)",
-        // order: 1
       };
     },
     //dymnamic grid layout for products
@@ -225,9 +224,7 @@ export default {
           this.inputMaxTest -= 1;
         }
       }
-      console.log(columnLength);
       let indexes = this.getAllIndexes(randomSetToShowInProducts, true);
-      console.log(indexes);
 
       //Fix the case where there is only one T showing in a row and col. Only one in the cross.
       let idxOnlyTrueInRowCol = this.fixIndexOnlyTRowCol(indexes, columnLength);
@@ -239,7 +236,6 @@ export default {
       }
 
       //Return ammended visibility array for products -- ensures at least 1 number showing per row and column
-      console.log(this.inputMaxTest);
       return randomSetToShowInProducts;
     },
     getAllIndexes: function (arr, val) {
@@ -269,26 +265,18 @@ export default {
       ) {
         tempArr.push(arr[arr.length - 1]);
       }
-      console.log(tempArr); //all indexes of only T in row
+      //now have all indexes of only T in row
 
       let colArr = arr.map((e) => e % numCols); //col num for each index
-      console.log(colArr);
-
       for (let i = 0; i < colArr.length; i++) {
-        console.log("val from colArr: " + colArr[i]);
         for (let j = 0; j < tempArr.length; j++) {
           let colMod = tempArr[j] % numCols;
-
-          console.log("mod from temp: " + colMod);
           if (colArr[i] == colMod && arr[i] !== tempArr[j]) {
-            //console.log("a");
             tempArr.splice(j, 1);
             j--;
-            console.log(tempArr);
           }
         }
       }
-      //console.log(tempArr);
 
       //Show row factor if nothing is showing in the cross.
       for (let j = 0; j < tempArr.length; j++) {
@@ -297,22 +285,17 @@ export default {
         if (this.columnFactorVisibility[colNum] == false) {
           this.rowFactorVisibility[rowNum] = true;
           this.inputMaxTest -= 1;
-          console.log("changed row: " + rowNum);
         }
       }
-
-      console.log(this.inputMaxTest);
     },
     ammendVisibility: function (numChanges) {
       for (let i = 0; i < numChanges; i++) {
         let indexC = this.columnFactorVisibility.indexOf(false);
         this.columnFactorVisibility[indexC] = true;
-        console.log("ammended col index: " + indexC);
         i++;
         if (i < numChanges) {
           let indexR = this.rowFactorVisibility.indexOf(false);
           this.rowFactorVisibility[indexR] = true;
-          console.log("ammended row index: " + indexR);
         }
       }
     },
@@ -582,7 +565,8 @@ button.play-again {
   font-size: 2em;
 }
 
-.flip-enter-active {
+/*Flip Effect for Title -- changed to fade */
+/* .flip-enter-active {
   animation-name: spin;
   -webkit-animation-name: spin;
   animation-timing-function: ease-in-out;
@@ -606,7 +590,7 @@ button.play-again {
   100% {
     transform: rotateY(0deg);
   }
-}
+} */
 
 .fade-enter-active {
   animation: fade 1s linear forwards;
