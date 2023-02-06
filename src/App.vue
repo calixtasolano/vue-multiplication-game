@@ -45,7 +45,7 @@ export default {
       gameOver: false,
       correctFlip: "",
       correctFade: "",
-      inputMaxTest: 1,
+      inputMaxTest: 0,
     };
   },
   computed: {
@@ -114,7 +114,7 @@ export default {
     },
     //Initialize game grid
     init: function () {
-      this.inputMaxTest = 1;
+      this.inputMaxTest = 0;
       this.columnFactors = this.buildFactorArray(colDim);
       this.rowFactors = this.buildFactorArray(rowDim);
       this.products = this.buildProductArray();
@@ -169,7 +169,6 @@ export default {
     productsHideShow: function (arrLength) {
       // take each row one at a time and pick one random index
       //set that index to show
-
       let productLength = this.products.length;
       let columnLength = this.columnFactors.length;
       let rowLength = this.rowFactors.length;
@@ -201,7 +200,6 @@ export default {
           );
           this.inputMaxTest -= 1;
         }
-
         //Change the random indices chosen to appear in each row to now read true in visibility
         randomSetToShowInProducts[randomFromRow] = true;
       }
@@ -227,6 +225,13 @@ export default {
           this.inputMaxTest -= 1;
         }
       }
+      console.log(columnLength);
+      let indexes = this.getAllIndexes(randomSetToShowInProducts, true);
+      console.log(indexes);
+
+      //Fix the case where there is only one T showing in a row and col. Only one in the cross.
+      let idxOnlyTrueInRowCol = this.fixIndexOnlyTRowCol(indexes, columnLength);
+
       //Check that there are not more inputs than product array length. If there are, ammend colFactors/rowFactors
       let ammendmentsToMake = this.inputMaxTest - arrLength;
       if (ammendmentsToMake > 0) {
@@ -234,16 +239,80 @@ export default {
       }
 
       //Return ammended visibility array for products -- ensures at least 1 number showing per row and column
+      console.log(this.inputMaxTest);
       return randomSetToShowInProducts;
+    },
+    getAllIndexes: function (arr, val) {
+      var indexes = [],
+        i = -1;
+      while ((i = arr.indexOf(val, i + 1)) != -1) {
+        indexes.push(i);
+      }
+      return indexes;
+    },
+    fixIndexOnlyTRowCol: function (arr, numCols) {
+      let tempArr = [];
+      if (Math.floor(arr[0] / numCols) != Math.floor(arr[1] / numCols)) {
+        tempArr.push(arr[0]);
+      }
+      for (let i = 1; i < arr.length - 1; i++) {
+        if (
+          Math.floor(arr[i - 1] / numCols) != Math.floor(arr[i] / numCols) &&
+          Math.floor(arr[i] / numCols) != Math.floor(arr[i + 1] / numCols)
+        ) {
+          tempArr.push(arr[i]);
+        }
+      }
+      if (
+        Math.floor(arr[arr.length - 2] / numCols) !=
+        Math.floor(arr[arr.length - 1] / numCols)
+      ) {
+        tempArr.push(arr[arr.length - 1]);
+      }
+      console.log(tempArr); //all indexes of only T in row
+
+      let colArr = arr.map((e) => e % numCols); //col num for each index
+      console.log(colArr);
+
+      for (let i = 0; i < colArr.length; i++) {
+        console.log("val from colArr: " + colArr[i]);
+        for (let j = 0; j < tempArr.length; j++) {
+          let colMod = tempArr[j] % numCols;
+
+          console.log("mod from temp: " + colMod);
+          if (colArr[i] == colMod && arr[i] !== tempArr[j]) {
+            //console.log("a");
+            tempArr.splice(j, 1);
+            j--;
+            console.log(tempArr);
+          }
+        }
+      }
+      //console.log(tempArr);
+
+      //Show row factor if nothing is showing in the cross.
+      for (let j = 0; j < tempArr.length; j++) {
+        let colNum = tempArr[j] % numCols;
+        let rowNum = Math.floor(tempArr[j] / numCols);
+        if (this.columnFactorVisibility[colNum] == false) {
+          this.rowFactorVisibility[rowNum] = true;
+          this.inputMaxTest -= 1;
+          console.log("changed row: " + rowNum);
+        }
+      }
+
+      console.log(this.inputMaxTest);
     },
     ammendVisibility: function (numChanges) {
       for (let i = 0; i < numChanges; i++) {
         let indexC = this.columnFactorVisibility.indexOf(false);
         this.columnFactorVisibility[indexC] = true;
+        console.log("ammended col index: " + indexC);
         i++;
         if (i < numChanges) {
           let indexR = this.rowFactorVisibility.indexOf(false);
           this.rowFactorVisibility[indexR] = true;
+          console.log("ammended row index: " + indexR);
         }
       }
     },
@@ -305,7 +374,7 @@ export default {
     <!--     <p>{{ "column factors: " + columnFactors.map((a) => a.factor) }}</p>
     <p>{{ "row factors: " + rowFactors.map((a) => a.factor) }}</p> -->
 
-    <transition :name="correctFlip" mode="out-in">
+    <transition :name="correctFade" mode="out-in">
       <h1 v-if="!gameOver">Complete the Multiplication Grid</h1>
       <p v-else class="game-end">Great Job!</p>
     </transition>
@@ -316,69 +385,71 @@ export default {
         their products.
       </p>
     </div>
-    <div class="multiplication-grid">
-      <div class="column-factors" :style="gridStyleColumns">
-        <!-- <div class="column-factors"> -->
-        <div></div>
-        <GridSquare
-          class="value-cell"
-          v-for="(item, index) in columnFactors"
-          :item="item"
-          :index="index"
-          :key="item.id"
-          :showing="[columnFactorVisibility, emptyBoxes]"
-          @add-true="eventHandler"
-        />
-      </div>
-      <div class="row-two-down">
-        <div class="row-factors">
+    <div class="board-container">
+      <div class="multiplication-grid">
+        <div class="column-factors" :style="gridStyleColumns">
+          <!-- <div class="column-factors"> -->
+          <div></div>
           <GridSquare
             class="value-cell"
-            v-for="(item, index) in rowFactors"
+            v-for="(item, index) in columnFactors"
             :item="item"
             :index="index"
             :key="item.id"
-            :showing="[rowFactorVisibility, emptyBoxes]"
+            :showing="[columnFactorVisibility, emptyBoxes]"
             @add-true="eventHandler"
           />
         </div>
-        <div class="products" :style="gridStyleProducts">
-          <GridSquare
-            class="value-cell"
-            v-for="(item, index) in products"
-            :item="item"
-            :index="index"
-            :key="item.id"
-            :showing="[productsVisibility, emptyBoxes]"
-            @add-true="eventHandler"
-          />
+        <div class="row-two-down">
+          <div class="row-factors">
+            <GridSquare
+              class="value-cell"
+              v-for="(item, index) in rowFactors"
+              :item="item"
+              :index="index"
+              :key="item.id"
+              :showing="[rowFactorVisibility, emptyBoxes]"
+              @add-true="eventHandler"
+            />
+          </div>
+          <div class="products" :style="gridStyleProducts">
+            <GridSquare
+              class="value-cell"
+              v-for="(item, index) in products"
+              :item="item"
+              :index="index"
+              :key="item.id"
+              :showing="[productsVisibility, emptyBoxes]"
+              @add-true="eventHandler"
+            />
+          </div>
         </div>
       </div>
+      <!-- <p>{{ answerArr }}</p> -->
+      <transition :name="correctFade" mode="out-in">
+        <button
+          v-if="!gameOver"
+          v-on:click="showResult()"
+          class="check-btn"
+          :class="[btnActive ? 'check-btn' : 'other']"
+          @click="toggle"
+        >
+          <strong>
+            {{ btnActive ? "KEEP GOING" : "CHECK ANSWERS" }}
+          </strong>
+        </button>
+        <button
+          v-else
+          class="play-again"
+          @click="
+            init();
+            toggle();
+          "
+        >
+          <strong> PLAY AGAIN! </strong>
+        </button>
+      </transition>
     </div>
-    <!-- <p>{{ answerArr }}</p> -->
-    <transition :name="correctFade" mode="out-in">
-      <button
-        v-if="!gameOver"
-        v-on:click="showResult()"
-        class="check-btn"
-        :class="[btnActive ? 'check-btn' : 'other']"
-        @click="toggle"
-      >
-        <strong>
-          {{ btnActive ? "KEEP GOING" : "CHECK ANSWERS" }}
-        </strong>
-      </button>
-      <button
-        v-else
-        class="play-again"
-        @click="
-          init();
-          toggle();
-        "
-      >
-        <strong> PLAY AGAIN! </strong>
-      </button>
-    </transition>
     <!-- <p>
       total inputs: {{ totalInputs }} true:{{ trueCount }} false:{{ falseCount }}
     </p> -->
@@ -407,18 +478,35 @@ div.directions > p {
   margin: 0em 0em 1em 0em;
 }
 
+@media (max-width: 500px) {
+  h1,
+  p.game-end {
+    max-width: 13em;
+    min-height: 3.2em;
+  }
+  p.game-end {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
 @media (max-width: 550px) {
   h1,
   p.game-end {
     font-size: 1.8em;
-    min-height: 3.2em;
+    width: auto;
   }
+}
+
+div.board-container {
+  max-width: fit-content;
+  margin: 0 auto;
 }
 div.multiplication-grid {
   /* border: solid 0.2em magenta; */
   max-width: fit-content;
   display: grid;
-  margin: 0 auto;
+  box-shadow: 10px 10px 5px lightgray;
 }
 div.column-factors {
   display: flex;
